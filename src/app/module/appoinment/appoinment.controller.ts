@@ -46,11 +46,24 @@ const payAppoinment = catchAsync(async (req: Request, res: Response) => {
 });
 
 
+const cancelAppoinment = catchAsync(async (req: Request, res: Response) => {
 
+    const payload = req.body;
+
+    const result = await AppoinmentService.cancelAppoinment(payload)
+
+    sendResponse(res, {
+        statusCode: httpStatus.CREATED,
+        success: true,
+        message: "Cancellerd Appoinment Payment Refund Initiated ",
+        data: result
+    })
+});
 
 
 export const AppoinmentController = {
     bookAppoinment,
     bookAppoinmentCallback,
-    payAppoinment
+    payAppoinment,
+    cancelAppoinment
 }

@@ -11,6 +11,7 @@ const router = Router();
 
 router.post("/book-appoinment", auth(Role.PATIENT), AppoinmentController.bookAppoinment)
 router.post("/pay-appoinment", auth(Role.PATIENT), AppoinmentController.payAppoinment)
+router.post("/cancel-appoinment", auth(Role.PATIENT), AppoinmentController.cancelAppoinment)
 
 router.get("/book-appoinment/payment/callback", AppoinmentController.bookAppoinmentCallback)
 
