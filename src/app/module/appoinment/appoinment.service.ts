@@ -68,6 +68,75 @@ const bookAppoinment = async (payload: any, user: RequestUser) => {
     return transactionResult
 }
 
+const payAppoinment = async (payload: any, user: RequestUser) => {
+
+    const appoinmentId = payload.appoinmentId;
+
+    const ExsistAppoinment = await prisma.apppointment.findUnique({
+        where: {
+            id: appoinmentId
+        }
+    });
+
+    console.log(ExsistAppoinment);
+
+
+    if (!ExsistAppoinment) {
+        throw new Error("Appoinment Dose Not Exist")
+    }
+    if (ExsistAppoinment.status !== "PENDING") {
+        throw new Error("Appoinment Is Not Pending")
+    }
+
+
+
+    // Bkash Payment Integration...
+    const bkashIdToken = await getBkashIdToken()
+    const bkashUrlResponse = await fetch(`${config.bkash_base_url}/tokenized/checkout/create`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            authorization: bkashIdToken,
+            "x-app-key": config.bkash_app_key
+        },
+        body: JSON.stringify({
+            mode: "0011",
+            // payerReference: "01723888888",
+            payerReference: user.email,
+            callbackURL: `${config.bKash_callback_url}/appoinment/book-appoinment/payment/callback`,
+            amount: "120",
+            currency: "BDT",
+            intent: "sale",
+            // merchantInvoiceNumber: "Inv0001"
+            merchantInvoiceNumber: ExsistAppoinment.id || "abc11"
+        })
+    });
+
+    const bkashUrlResult = await bkashUrlResponse.json()
+
+
+    // Update payment
+    await prisma.payment.update({
+        where: {
+            appointmentId: ExsistAppoinment.id
+        },
+        data: {
+            merchantInvoiceNumber: bkashUrlResult.merchantInvoiceNumber,
+            appointmentId: ExsistAppoinment.id,
+            gatewayResponse: bkashUrlResult,
+            bkashPaymentId: bkashUrlResult.paymentID,
+            payerReference: user.email
+
+
+        }
+    })
+    return {
+        paymentURL: bkashUrlResult.bkashURL
+    }
+
+
+}
 
 
 const bookAppoinmentCallback = async (query: Record<string, any>) => {
@@ -198,5 +267,6 @@ const bookAppoinmentCallback = async (query: Record<string, any>) => {
 
 export const AppoinmentService = {
     bookAppoinment,
-    bookAppoinmentCallback
+    bookAppoinmentCallback,
+    payAppoinment
 }

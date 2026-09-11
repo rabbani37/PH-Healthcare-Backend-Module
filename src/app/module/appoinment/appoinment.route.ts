@@ -10,6 +10,7 @@ const router = Router();
 
 
 router.post("/book-appoinment", auth(Role.PATIENT), AppoinmentController.bookAppoinment)
+router.post("/pay-appoinment", auth(Role.PATIENT), AppoinmentController.payAppoinment)
 
 router.get("/book-appoinment/payment/callback", AppoinmentController.bookAppoinmentCallback)
 

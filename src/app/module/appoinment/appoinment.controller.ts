@@ -30,11 +30,27 @@ const bookAppoinmentCallback = catchAsync(async (req: Request, res: Response) =>
     res.redirect(redirectUrl)
 });
 
+const payAppoinment = catchAsync(async (req: Request, res: Response) => {
+
+    const payload = req.body;
+    const user = req.user!
+
+    const result = await AppoinmentService.payAppoinment(payload, user)
+
+    sendResponse(res, {
+        statusCode: httpStatus.CREATED,
+        success: true,
+        message: "Appoinment Payment Initiated ",
+        data: result
+    });
+});
+
 
 
 
 
 export const AppoinmentController = {
     bookAppoinment,
-    bookAppoinmentCallback
+    bookAppoinmentCallback,
+    payAppoinment
 }
