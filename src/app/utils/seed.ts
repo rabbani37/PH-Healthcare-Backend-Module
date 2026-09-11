@@ -132,6 +132,16 @@ export const seedTestDoctor = async () => {
                 password: hashPass,
                 role: Role.DOCTOR,
                 emailVerified: true,
+                doctor:{
+                    create:{
+                        name,
+                        email,
+                        experinceYears: 5,
+                        licenseNumber: "1234567890",
+                        qualifications: "MBBS, FCPS",
+                        specilization: "General Physician",
+                    }
+                }
             }
         });
 
