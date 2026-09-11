@@ -1,10 +1,6 @@
 import bcrypt from "bcryptjs";
 import type { JwtPayload, SignOptions } from "jsonwebtoken";
-import {
-	AuthProvider,
-	Role,
-	UserStatus,
-} from "../../../generated/prisma/enums";
+
 import config from "../../config";
 import { prisma } from "../../lib/prisma";
 import { jwtUtils } from "../../utils/jwt";
@@ -25,6 +21,7 @@ import { transporter } from "../../lib/nodemailer";
 import path from "path"
 import ejs from "ejs"
 import { error } from "console";
+import { AuthProvider, Role, UserStatus } from "../../../generated/prisma/enums";
 
 
 const registerPatient = async (payload: IRegisterPatientPayload) => {
@@ -456,7 +453,7 @@ const forgotPassword = async (payload: ForgotPasswordPayload) => {
 
 
 const resetPassword = async (payload: ResetPasswordPayload) => {
-	const { email, newPassword, otp } = payload;
+	const { email, newPassword } = payload;
 
 	const isExsistUser = await prisma.user.findUnique({
 		where: { email }

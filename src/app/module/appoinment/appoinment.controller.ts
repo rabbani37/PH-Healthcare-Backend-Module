@@ -8,7 +8,9 @@ import { AppoinmentService } from "./appoinment.service";
 
 const bookAppoinment = catchAsync(async (req: Request, res: Response) => {
 
-    const result = await AppoinmentService.bookAppoinment()
+    const payload = req.body;
+    const user = req.user!
+    const result = await AppoinmentService.bookAppoinment(payload, user)
 
     sendResponse(res, {
         statusCode: httpStatus.CREATED,

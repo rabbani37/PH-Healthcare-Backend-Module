@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { AppoinmentController } from "./appoinment.controller";
+import { auth } from "../../middleware/checkAuth";
+import { Role } from "../../../generated/prisma/enums";
 
 
 
@@ -7,9 +9,9 @@ import { AppoinmentController } from "./appoinment.controller";
 const router = Router();
 
 
-router.post("/book-appoinment", AppoinmentController.bookAppoinment)
+router.post("/book-appoinment", auth(Role.PATIENT), AppoinmentController.bookAppoinment)
 
-router.get("/book-appoinment/payment/callback",AppoinmentController.bookAppoinmentCallback)
+router.get("/book-appoinment/payment/callback", AppoinmentController.bookAppoinmentCallback)
 
 
 
