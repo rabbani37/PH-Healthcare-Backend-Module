@@ -1,17 +1,18 @@
 import { UploadApiResponse } from "cloudinary";
 import { cloudinary } from "../../lib/cloudinary";
 import { prisma } from "../../lib/prisma";
-import { fi, ne } from "zod/locales";
+import { fi, id, ne, tr } from "zod/locales";
 import { randomInt } from "node:crypto";
 import bcrypt from "bcryptjs";
-import { Role } from "../../../generated/prisma/enums";
-import { IDoctorApplicationPayload, IVerifyDoctorEmailPayload } from "./doctor.interface";
+import { DoctorVerificationStatus, Role } from "../../../generated/prisma/enums";
+import { IApprovedDoctorPayload, IDoctorApplicationPayload, IVerifyDoctorEmailPayload } from "./doctor.interface";
 import crypto from "crypto";
 import { redisClient } from "../../lib/redisClient";
 import path from "path";
 import ejs from "ejs";
 import { transporter } from "../../lib/nodemailer";
 import config from "../../config";
+import { RequestUser } from "../../middleware/checkAuth";
 
 const applyAsDoctor = async (
     payload: IDoctorApplicationPayload,
@@ -168,21 +169,120 @@ const verifyDoctorEmail = async (payload: IVerifyDoctorEmailPayload) => {
     })
     await redisClient.del(otpKey);
 
+    // Send Under Review to doctor email
+    const templatePath = path.join(process.cwd(), "src/app/templates/welcome-email-under-review.ejs");
 
-    // Send OTP to doctor email
-    const templatePath = path.join(process.cwd(), "src/app/templates/welcome-email.ejs");
-    const templateData = { name: verifiedUser.name, email: verifiedUser.email };
+    const templateData = {
+        name: isExsistUser.name,
+        email: isExsistUser.email,
+        specialization: verifiedUser.doctor?.specilization,
+        license: verifiedUser.doctor?.licenseNumber,
+        approval: verifiedUser.doctor?.verificationStatus, date: verifiedUser.doctor?.reviewedAt
+    };
+
     const templateHtml = await ejs.renderFile(templatePath, templateData);
     await transporter.sendMail({
         from: config.smtp_sender,
-        to: verifiedUser.email,
-        subject: "Welcome to Our Platform – Your Account Is Ready",
+        to: isExsistUser.email,
+        subject: "Doctor Application Received – Under Review",
         html: templateHtml
     });
 
 
 
+
     return verifiedUser;
+}
+
+
+const approvedDoctor = async (payload: IApprovedDoctorPayload, reviewer: RequestUser) => {
+    const { doctorId, verificationStatus, rejectionReason } = payload
+
+    const isExsistDoctor = await prisma.doctor.findUnique({
+        where: { id: doctorId },
+        include: { user: true }
+    });
+
+    if (!isExsistDoctor) {
+        throw new Error("Doctor Application Not Found!")
+    }
+
+    if (isExsistDoctor.isDeleted) {
+        throw new Error("Doctor Application Has been Deleted")
+    }
+    if (!isExsistDoctor.user.emailVerified) {
+        throw new Error("Doctor Has Not Verifed Yet.")
+
+    }
+
+    if (isExsistDoctor.verificationStatus !== DoctorVerificationStatus.PENDING) {
+        throw new Error(`Doctor Application Has Already been
+             ${isExsistDoctor.verificationStatus.toLowerCase()}`)
+    }
+    if (verificationStatus === DoctorVerificationStatus.REJECTED && !rejectionReason) {
+        throw new Error("Rejection Reason is Required")
+    }
+    const updatedDoctor = await prisma.doctor.update({
+        where: { id: doctorId },
+        data: {
+            verificationStatus,
+            rejectionReason: verificationStatus === DoctorVerificationStatus.REJECTED ? rejectionReason : null,
+            reviewedBy: reviewer.userId,
+            reviewedAt: new Date
+        },
+
+    })
+
+    const isApploved = updatedDoctor.verificationStatus === DoctorVerificationStatus.APPROVED
+    // Send Approvel Message to doctor email
+
+    if (isApploved) {
+
+        const templatePath = path.join(process.cwd(), "src/app/templates/doctor-application-approved.ejs");
+        const templateData = {
+            name: updatedDoctor.name,
+            specialization: updatedDoctor.specilization,
+            licenseNumber: updatedDoctor.licenseNumber,
+            approvalDate: updatedDoctor?.reviewedAt?.toLocaleDateString()
+        }
+        const templateHtml = await ejs.renderFile(templatePath, templateData);
+        await transporter.sendMail({
+            from: config.smtp_sender,
+            to: isExsistDoctor.email,
+            subject: "Doctor Application Approved – Welcome to Our Healthcare Platform",
+            html: templateHtml
+        });
+    }
+
+    // Send Rejection Message to doctor email
+    else {
+
+        const templatePathRejection = path.join(process.cwd(), "src/app/templates/doctor-application-rejection.ejs");
+        const templateDataRejection = {
+            name: updatedDoctor.name,
+            rejectionReason: updatedDoctor.rejectionReason || "Your medical information could not be verified.",
+            rejectedDate: updatedDoctor?.reviewedAt?.toLocaleDateString()
+        }
+        const templateHtmlRejection = await ejs.renderFile(templatePathRejection, templateDataRejection);
+        await transporter.sendMail({
+            from: config.smtp_sender,
+            to: isExsistDoctor.email,
+            subject: "Doctor Application Update – Application Rejeted",
+            html: templateHtmlRejection
+        });
+
+
+
+        return updatedDoctor
+    }
+}
+
+
+
+const getAllDoctors = async () => {
+
+
+
 
 
 }
@@ -192,7 +292,21 @@ const verifyDoctorEmail = async (payload: IVerifyDoctorEmailPayload) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 export const DoctorServices = {
     applyAsDoctor,
-    verifyDoctorEmail
+    verifyDoctorEmail,
+    approvedDoctor,
+    getAllDoctors
 }

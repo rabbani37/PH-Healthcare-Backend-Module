@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Application Rejected</title>
+</head>
+
+<body style="margin: 0; padding: 0; background-color: #f5f7fa; font-family: Arial, Helvetica, sans-serif;">
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f7fa; padding: 40px 15px;">
+
+        <tr>
+            <td align="center">
+
+                <!-- Email Container -->
+                <table width="100%" cellpadding="0" cellspacing="0"
+                    style="max-width: 500px; background-color: #ffffff; border-radius: 8px; overflow: hidden;">
+
+                    <!-- Header -->
+                    <tr>
+                        <td style="padding: 28px 30px; border-bottom: 1px solid #eeeeee;">
+                            <h2 style="margin: 0; color: #111827; font-size: 22px;">
+                                Doctor Application Update
+                            </h2>
+                        </td>
+                    </tr>
+
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding: 30px;">
+
+                            <p style="
+                                margin: 0 0 15px;
+                                color: #374151;
+                                font-size: 15px;
+                                line-height: 1.6;
+                            ">
+                                Hello <strong>
+                                    <%= name %>
+                                </strong>,
+                            </p>
+
+                            <p style="
+                                margin: 0 0 15px;
+                                color: #374151;
+                                font-size: 15px;
+                                line-height: 1.6;
+                            ">
+                                Thank you for your interest in joining our healthcare
+                                platform and for taking the time to submit your doctor
+                                application.
+                            </p>
+
+                            <p style="
+                                margin: 0 0 15px;
+                                color: #374151;
+                                font-size: 15px;
+                                line-height: 1.6;
+                            ">
+                                After carefully reviewing your application and the
+                                information provided, we regret to inform you that
+                                your doctor application has been <strong>rejected</strong>
+                                at this time.
+                            </p>
+
+                            <!-- Application Status -->
+                            <div style="
+                                margin: 25px 0;
+                                padding: 20px;
+                                background-color: #f3f4f6;
+                                border: 1px solid #e5e7eb;
+                                border-radius: 6px;
+                            ">
+
+                                <p style="
+                                    margin: 0 0 15px;
+                                    color: #111827;
+                                    font-size: 18px;
+                                    font-weight: bold;
+                                    text-align: center;
+                                ">
+                                    Application Rejected
+                                </p>
+
+                                <p style="
+                                    margin: 0 0 8px;
+                                    color: #6b7280;
+                                    font-size: 13px;
+                                ">
+                                    <strong style="color: #374151;">
+                                        Reason for Rejection:
+                                    </strong>
+                                </p>
+
+                                <p style="
+                                    margin: 0;
+                                    padding: 12px;
+                                    background-color: #ffffff;
+                                    border: 1px solid #e5e7eb;
+                                    border-radius: 4px;
+                                    color: #374151;
+                                    font-size: 14px;
+                                    line-height: 1.6;
+                                ">
+                                    <%= rejectionReason %>
+                                </p>
+                                <p style="
+                                    margin: 0 0 8px;
+                                    color: #6b7280;
+                                    font-size: 13px;
+                                ">
+                                    <strong style="color: #374151;">
+                                        Rejected Date:
+                                    </strong>
+                                </p>
+
+                                <p style="
+                                    margin: 0;
+                                    padding: 12px;
+                                    background-color: #ffffff;
+                                    border: 1px solid #e5e7eb;
+                                    border-radius: 4px;
+                                    color: #374151;
+                                    font-size: 14px;
+                                    line-height: 1.6;
+                                ">
+                                    <%= rejectedDate %>
+
+                                </p>
+
+                            </div>
+
+                            <p style="
+                                margin: 0 0 15px;
+                                color: #374151;
+                                font-size: 15px;
+                                line-height: 1.6;
+                            ">
+                                We encourage you to review the reason provided above
+                                and take any necessary steps to address the issue.
+                            </p>
+
+                            <p style="
+                                margin: 0;
+                                color: #6b7280;
+                                font-size: 13px;
+                                line-height: 1.5;
+                            ">
+                                If you believe this decision was made in error or you
+                                have questions regarding your application, please
+                                contact our support team for further assistance.
+                            </p>
+
+                            <p style="
+                                margin: 25px 0 0;
+                                color: #374151;
+                                font-size: 14px;
+                                line-height: 1.5;
+                            ">
+                                Thank you for your understanding and for your interest
+                                in our healthcare platform.
+                            </p>
+
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="
+                            padding: 20px 30px;
+                            background-color: #fafafa;
+                            border-top: 1px solid #eeeeee;
+                            text-align: center;
+                        ">
+                            <p style="
+                                margin: 0;
+                                color: #9ca3af;
+                                font-size: 12px;
+                            ">
+                                This is an automated email. Please do not reply.
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+
+    </table>
+
+</body>
+
+</html>

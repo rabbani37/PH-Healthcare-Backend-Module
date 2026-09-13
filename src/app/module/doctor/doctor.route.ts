@@ -17,7 +17,16 @@ router.post("/apply-as-doctor",
     ]),
     DoctorController.applyAsDoctor)
 
-router.post("/apply-as-doctor/verify-email", DoctorController.verifyDoctorEmail)
+router.post("/apply-as-doctor/verify-email",
+    DoctorController.verifyDoctorEmail);
+
+router.post("/approved-doctor",
+    auth(Role.ADMIN, Role.SUPER_ADMIN),
+    DoctorController.approvedDoctor);
+
+router.get("/all-doctors",
+    auth(Role.ADMIN, Role.SUPER_ADMIN),
+    DoctorController.getAllDoctors)
 
 
 
