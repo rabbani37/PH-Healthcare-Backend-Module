@@ -1,8 +1,6 @@
 import { UploadApiResponse } from "cloudinary";
 import { cloudinary } from "../../lib/cloudinary";
 import { prisma } from "../../lib/prisma";
-import { fi, id, ne, tr } from "zod/locales";
-import { randomInt } from "node:crypto";
 import bcrypt from "bcryptjs";
 import { DoctorVerificationStatus, Role } from "../../../generated/prisma/enums";
 import { IApprovedDoctorPayload, IDoctorApplicationPayload, IVerifyDoctorEmailPayload } from "./doctor.interface";
@@ -13,6 +11,8 @@ import ejs from "ejs";
 import { transporter } from "../../lib/nodemailer";
 import config from "../../config";
 import { RequestUser } from "../../middleware/checkAuth";
+import { IQuery } from "../../interfaces";
+import { DoctorWhereInput } from "../../../generated/prisma/models";
 
 const applyAsDoctor = async (
     payload: IDoctorApplicationPayload,
@@ -279,10 +279,109 @@ const approvedDoctor = async (payload: IApprovedDoctorPayload, reviewer: Request
 
 
 
-const getAllDoctors = async () => {
+const getAllDoctors = async (query: IQuery) => {
+
+
+    // search , filter, sorting, pagination 
+
+    const limit = query.limit ? Number(query.limit) : 10;
+    const page = query.page ? Number(query.page) : 1;
+    const skip = (page - 1) * limit;
+    const sortBy = query.sortBy ? query.sortBy : "createdAt"
+    const sortOrder = query.sortOrder ? query.sortOrder : "desc"
+
+    const andCondition: DoctorWhereInput[] = [];
+
+
+    // find doctors by searchBox or searchTerm || searching
+    if (query.searchTerm) {
+        andCondition.push({
+            OR: [
+                { name: { contains: query.searchTerm, mode: "insensitive" } },
+                { email: { contains: query.searchTerm, mode: "insensitive" } },
+                { specilization: { contains: query.searchTerm, mode: "insensitive" } },
+                { licenseNumber: { contains: query.searchTerm, mode: "insensitive" } },
+            ]
+        })
+    }
 
 
 
+    // filter by queary parameter || Filtering
+
+    if (query.specilization) {
+        andCondition.push({
+            specilization: { contains: query.specilization, mode: "insensitive" }
+        })
+    }
+    if (query.email) {
+        andCondition.push({
+            email: { contains: query.email, mode: "insensitive" }
+        })
+    }
+    if (query.licenseNumber) {
+        andCondition.push({
+            licenseNumber: { equals: query.licenseNumber, mode: "insensitive" }
+        })
+    }
+    if (query.verificationStatus) {
+        andCondition.push({
+            verificationStatus: query.verificationStatus as DoctorVerificationStatus
+        })
+    }
+
+    andCondition.push({
+        isDeleted: false
+    });
+
+
+
+    const allDoctors = prisma.doctor.findMany({
+        where: {
+            AND: andCondition
+        },
+
+        // sorting, 
+        orderBy: {
+            [sortBy]: sortOrder
+        },
+
+        // pagination
+        take: limit,
+        skip: skip,
+        include: {
+            user:
+            {
+                omit: { password: true },
+            },
+            // appointment
+            // Shedual,
+            // prescription
+
+        },
+
+    })
+
+
+    const totalDoctorCount = await prisma.doctor.count({
+        where: {
+            AND: andCondition
+        }
+
+    })
+
+
+    return {
+        data: allDoctors,
+        meta: {
+            limit: limit,
+            page: page,
+            skip: skip,
+            totalDoctor: totalDoctorCount,
+            totalPage: Math.ceil(totalDoctorCount / limit)
+
+        }
+    };
 
 
 }
