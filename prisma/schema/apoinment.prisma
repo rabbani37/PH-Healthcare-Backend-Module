@@ -6,7 +6,9 @@ model Apppointment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  payment Payment?
+  appointmentDate DateTime
+  
+  payment         Payment?
 
   @@map("appointments")
 }

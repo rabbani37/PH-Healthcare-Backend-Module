@@ -37,7 +37,7 @@ export const seedSupperAdmin = async () => {
                 password: hashPass,
                 role: Role.SUPER_ADMIN,
                 emailVerified: true,
-            }
+            },omit:{password: true}
         });
 
         console.log("suppper admin created: ", supperAdmin);
@@ -86,7 +86,7 @@ export const seedTestAdmin = async () => {
                 password: hashPass,
                 role: Role.ADMIN,
                 emailVerified: true,
-            }
+            },omit:{password: true}
         });
 
         console.log(" Test admin created: ", testAdmin);
@@ -142,7 +142,7 @@ export const seedTestDoctor = async () => {
                         specilization: "General Physician",
                     }
                 }
-            }
+            },omit:{password: true}
         });
 
         console.log(" Doctor created: ", doctor);

@@ -9,6 +9,7 @@ import { AuthRoutes } from "./app/module/auth/auth.route";
 import { UserRouter } from "./app/module/user/user.router";
 import { getBkashIdToken } from "./app/lib/bKash";
 import { AppoinmentRoutes } from "./app/module/appoinment/appoinment.route";
+import { DoctorRoutes } from "./app/module/doctor/doctor.route";
 
 const app: Application = express();
 
@@ -29,6 +30,7 @@ app.use(cookieParser());
 app.use("/api/v1/auth", AuthRoutes);
 app.use("/api/v1/auth", UserRouter);
 app.use("/api/v1/appoinment", AppoinmentRoutes)
+app.use("/api/v1/doctor", DoctorRoutes)
 
 
 

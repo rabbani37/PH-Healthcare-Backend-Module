@@ -18,7 +18,8 @@ model Doctor {
     reviewedAt         DateTime?
 
     resume          String?
-    additionalFiles String[]
+    resumePublicId   String?
+    additionalFiles Json? // Array of file paths or URLs
 
     isDeleted Boolean   @default(false)
     deletedAt DateTime?

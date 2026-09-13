@@ -25,8 +25,38 @@ CREATE TABLE "appointments" (
     "status" "AppointmentStatus" NOT NULL DEFAULT 'PENDING',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "appointmentDate" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "appointments_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "doctors" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "address" TEXT,
+    "specilization" TEXT NOT NULL,
+    "licenseNumber" TEXT NOT NULL,
+    "qualifications" TEXT NOT NULL,
+    "experinceYears" INTEGER NOT NULL,
+    "bio" TEXT,
+    "consultationFee" DECIMAL(10,2),
+    "contactNumber" TEXT,
+    "verificationStatus" "DoctorVerificationStatus" NOT NULL DEFAULT 'PENDING',
+    "rejectionReason" TEXT,
+    "reviewedBy" TEXT,
+    "reviewedAt" TIMESTAMP(3),
+    "resume" TEXT,
+    "resumePublicId" TEXT,
+    "additionalFiles" JSONB,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "deletedAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "userId" TEXT NOT NULL,
+
+    CONSTRAINT "doctors_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -75,11 +105,11 @@ CREATE TABLE "users" (
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT,
-    "googleId" TEXT,
-    "authProvider" "AuthProvider" NOT NULL DEFAULT 'CREDENTIAL',
-    "emailVerified" BOOLEAN NOT NULL DEFAULT false,
     "role" "Role" NOT NULL DEFAULT 'PATIENT',
     "status" "UserStatus" NOT NULL DEFAULT 'ACTIVE',
+    "emailVerified" BOOLEAN NOT NULL DEFAULT false,
+    "googleId" TEXT,
+    "authProvider" "AuthProvider" NOT NULL DEFAULT 'CREDENTIAL',
     "needPasswordChange" BOOLEAN NOT NULL DEFAULT false,
     "imageUrl" TEXT NOT NULL DEFAULT '',
     "imagePublicId" TEXT NOT NULL DEFAULT '',
@@ -90,6 +120,18 @@ CREATE TABLE "users" (
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "doctors_email_key" ON "doctors"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "doctors_licenseNumber_key" ON "doctors"("licenseNumber");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "doctors_userId_key" ON "doctors"("userId");
+
+-- CreateIndex
+CREATE INDEX "idx_doctor_emai" ON "doctors"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "patients_email_key" ON "patients"("email");
@@ -117,6 +159,9 @@ CREATE UNIQUE INDEX "users_googleId_key" ON "users"("googleId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- AddForeignKey
+ALTER TABLE "doctors" ADD CONSTRAINT "doctors_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "patients" ADD CONSTRAINT "patients_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
