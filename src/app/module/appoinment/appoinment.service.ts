@@ -18,7 +18,7 @@ const bookAppoinment = async (payload: any, user: RequestUser) => {
         // create a new appoinment in the database
         const appointment = await tx.apppointment.create({
             data: {
-                status: "PENDING",
+                status: "PENDING"
             }
         })
 
@@ -289,7 +289,7 @@ const cancelAppoinment = async (payload: any) => {
             throw new Error("No Bkash Access Token Found!")
         }
 
-        
+
 
 
 

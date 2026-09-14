@@ -1,4 +1,6 @@
+import status from "http-status";
 import config from "../config"
+import { AppError } from "../utils/AppError";
 import { redisClient } from "./redisClient";
 
 
@@ -62,7 +64,7 @@ export const getBkashIdToken = async () => {
         const bkashApiResult = await bkashApiResponse.json();
 
         if (bkashApiResult.statusMessage !== "Successful") {
-            throw new Error("Token Not Found")
+            new AppError( status.NOT_FOUND,"Token Not Found")
         }
 
         // set id token in redist
@@ -85,7 +87,7 @@ export const getBkashIdToken = async () => {
     } catch (error: any) {
 
         console.log(`Bkash Grant Token ERROR: ${error.message}`);
-        throw new Error(`Failed to grant bKash token : ${error.message}`)
+       new AppError( status.NOT_FOUND, `Failed to grant bKash token : ${error.message}`)
 
     }
 }

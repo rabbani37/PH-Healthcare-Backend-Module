@@ -22,6 +22,8 @@ import path from "path"
 import ejs from "ejs"
 import { error } from "console";
 import { AuthProvider, Role, UserStatus } from "../../../generated/prisma/enums";
+import { AppError } from "../../utils/AppError";
+import httpStatus from "http-status";
 
 
 const registerPatient = async (payload: IRegisterPatientPayload) => {
@@ -179,7 +181,8 @@ const loginUser = async (payload: ILoginUserPayload) => {
 	});
 
 	if (!user) {
-		throw new Error("User not found");
+		// throw new Error("User not found");
+		throw new AppError(httpStatus.NOT_FOUND, "User Not Found!!!!",)
 	}
 
 	if (user.status === UserStatus.BLOCKED) {
@@ -298,6 +301,8 @@ const refreshToken = async (token: string) => {
 };
 
 const googleLogin = async (payload: IGoogleLoginPayload) => {
+
+
 	let googleTokenPayload = null;
 	try {
 		const ticket = await googleClient.verifyIdToken({

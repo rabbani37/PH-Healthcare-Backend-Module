@@ -1,6 +1,7 @@
 import z from "zod";
 import { catchAsync } from "../utils/catchAsync";
 import { NextFunction, Request, Response } from "express";
+import { AppError } from "../utils/AppError";
 
 
 export const validationRequest = (schemaZod: z.ZodObject) => {
@@ -11,7 +12,7 @@ export const validationRequest = (schemaZod: z.ZodObject) => {
         const result = schemaZod.safeParse(payload);
 
         if (!result.success) {
-            throw new Error(result.error.issues[0].message)
+            new AppError(500, result.error.issues[0].message)
         }
         req.body = result.data
         next()
