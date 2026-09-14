@@ -36,7 +36,7 @@ export const auth = (...requiredRoles: Role[]) => {
 				: req.headers.authorization;
 
 		if (!token) {
-			new AppError(status.NOT_FOUND,
+			throw new AppError(status.NOT_FOUND,
 				"You are not logged in. Please log in to access this resource.",
 			);
 		}
@@ -44,13 +44,13 @@ export const auth = (...requiredRoles: Role[]) => {
 		const verifiedToken = jwtUtils.verifyToken(token, config.jwt_access_secret);
 
 		if (!verifiedToken.success) {
-			new AppError( status.INTERNAL_SERVER_ERROR,verifiedToken.error);
+			throw new AppError(status.INTERNAL_SERVER_ERROR, verifiedToken.error);
 		}
 
 		const { email, name, userId, role } = verifiedToken.data as JwtPayload;
 
 		if (requiredRoles.length && !requiredRoles.includes(role)) {
-			new AppError(status.FORBIDDEN,
+		throw	new AppError(status.FORBIDDEN,
 				"Forbidden. You don't have permission to access this resource.",
 			);
 		}
@@ -69,7 +69,7 @@ export const auth = (...requiredRoles: Role[]) => {
 		}
 
 		if (user.status === "BLOCKED") {
-			new AppError(status.NOT_ACCEPTABLE,"Your account has been blocked. Please contact support.");
+		throw	new AppError(status.NOT_ACCEPTABLE, "Your account has been blocked. Please contact support.");
 		}
 
 		req.user = {

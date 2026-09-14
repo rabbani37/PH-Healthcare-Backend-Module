@@ -12,7 +12,7 @@ export const validationRequest = (schemaZod: z.ZodObject) => {
         const result = schemaZod.safeParse(payload);
 
         if (!result.success) {
-            new AppError(500, result.error.issues[0].message)
+        throw    new AppError(500, result.error.issues[0].message)
         }
         req.body = result.data
         next()
