@@ -1,8 +1,15 @@
 import app from "./app";
 import config from "./app/config";
+import { deleteUnverifiedDoctors } from "./app/lib/cron";
 import { prisma } from "./app/lib/prisma";
 import { redisClient } from "./app/lib/redisClient";
 import { seedSupperAdmin, seedTestAdmin, seedTestDoctor } from "./app/utils/seed";
+import cron from "node-cron";
+
+
+
+
+
 
 const PORT = config.port;
 
@@ -13,6 +20,16 @@ const main = async () => {
 
 		await redisClient.connect()
 		console.log("Connected redis successfully...");
+
+		// START CRON WORKING...
+
+		await deleteUnverifiedDoctors()
+
+
+
+		// END CRON...
+
+
 
 
 

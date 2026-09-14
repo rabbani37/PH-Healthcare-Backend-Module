@@ -336,7 +336,7 @@ const getAllDoctors = async (query: IQuery) => {
 
 
 
-    const allDoctors = prisma.doctor.findMany({
+    const allDoctors = await prisma.doctor.findMany({
         where: {
             AND: andCondition
         },
@@ -363,6 +363,8 @@ const getAllDoctors = async (query: IQuery) => {
     })
 
 
+    console.log(allDoctors);
+
     const totalDoctorCount = await prisma.doctor.count({
         where: {
             AND: andCondition
@@ -374,11 +376,11 @@ const getAllDoctors = async (query: IQuery) => {
     return {
         data: allDoctors,
         meta: {
-            limit: limit,
             page: page,
+            limit: limit,
             skip: skip,
-            totalDoctor: totalDoctorCount,
-            totalPage: Math.ceil(totalDoctorCount / limit)
+            total: totalDoctorCount,
+            totalPages: Math.ceil(totalDoctorCount / limit)
 
         }
     };
