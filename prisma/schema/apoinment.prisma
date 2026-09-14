@@ -3,12 +3,30 @@ model Apppointment {
 
   status AppointmentStatus @default(PENDING)
 
+  appointmentDate DateTime
+  joiningTime     DateTime
+  serialNumber    Int      @unique
+
+  recordUrl      String?
+  recordPublicId String?
+
+  prescriptionUlr      String?
+  prescriptionPublicId String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  appointmentDate DateTime
-  
-  payment         Payment?
+  patientId String
+  doctorId  String
+  sheduleId String
 
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  doctor  Doctor  @relation(fields: [doctorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  shedule Shedule @relation(fields: [sheduleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  payment Payment?
+
+  @@unique([patientId, doctorId, sheduleId], name: "unique_appointment")
+  @@unique([sheduleId, serialNumber, joiningTime], name: "unique_appointment_serial_number")
   @@map("appointments")
 }

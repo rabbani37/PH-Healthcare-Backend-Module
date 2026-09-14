@@ -1,5 +1,6 @@
 model Shedule {
-    id            String   @id @default(uuid())
+    id            String    @id @default(uuid())
+
     startDateTime DateTime
     endDateTime   DateTime
 
@@ -17,6 +18,8 @@ model Shedule {
 
     doctorId String @unique
     doctor   Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  appoinment Apppointment[]
 
     @@unique([doctorId, startDateTime, endDateTime], name: "uniqe_shedule")
     @@map("shedules")
