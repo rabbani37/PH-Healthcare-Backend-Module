@@ -21,4 +21,9 @@ export interface IShedule {
     endDateTime: Date;
     meetingLink: string;
 }
+export interface ISheduleUpdatePayload {
+    startDateTime?: Date;
+    endDateTime?: Date;
+    meetingLink?: string;
+}
 

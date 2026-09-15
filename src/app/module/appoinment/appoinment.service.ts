@@ -12,9 +12,6 @@ const bookAppoinment = async (payload: any, user: RequestUser) => {
 
     const transactionResult = await prisma.$transaction(async (tx) => {
 
-
-
-
         // create a new appoinment in the database
         const appointment = await tx.apppointment.create({
             data: {
